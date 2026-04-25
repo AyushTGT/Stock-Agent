@@ -1,6 +1,6 @@
 # Autonomous Financial Advisor Agent
 
-An **agentic AI system** that reasons causally about Indian stock market movements and their portfolio impact. Powered by Claude claude-sonnet-4-6 via the Anthropic SDK with Langfuse observability.
+An **agentic AI system** that reasons causally about Indian stock market movements and their portfolio impact. Powered by LLaMA 3.3 70B via Groq with Langfuse observability.
 
 ## What Makes This Different
 
@@ -29,9 +29,7 @@ User Query
     ▼
 FinancialAdvisorAgent.chat(message)
     │
-    ├── System Prompt (cached): market snapshot + news digest (~2500 tokens)
-    │
-    ├── LLM Call #1: Claude + 9 tools (agentic loop, max 8 iterations)
+    ├── LLM Call #1: LLaMA 3.3 70B + 9 tools (agentic loop, max 8 iterations)
     │   Each tool call → pure-Python analytics → Langfuse span
     │
     └── LLM Call #2: Self-evaluation (isolated, no history, no tools)
@@ -79,7 +77,7 @@ cp .env.example .env
 Edit `.env`:
 
 ```env
-ANTHROPIC_API_KEY=sk-ant-...        # required
+GROQ_API_KEY=gsk_...          # required — free at console.groq.com
 
 # Optional — Langfuse observability
 LANGFUSE_SECRET_KEY=sk-lf-...
@@ -135,15 +133,13 @@ When `LANGFUSE_SECRET_KEY` is set, every turn creates:
 
 ```
 TRACE: financial-advisor-chat
-  ├── GENERATION: claude-call-1 (input tokens, cache_read_tokens, output tokens)
+  ├── GENERATION: groq-call-1 (input tokens, output tokens)
   ├── SPAN: tool:get_portfolio_summary
   ├── SPAN: tool:get_causal_chain
   ├── SPAN: tool:get_conflict_analysis
   ├── GENERATION: self-evaluation
   └── SCORE: overall_quality (0–1 scale, 5-criterion mean)
 ```
-
-**Confirm prompt caching is working**: after the first turn, `cache_read_input_tokens > 0` in the Langfuse generation span — the ~2500-token system prompt is served from cache on every subsequent call.
 
 **Batch retroactive scoring:**
 ```python
