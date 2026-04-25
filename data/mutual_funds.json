@@ -1,0 +1,191 @@
+{
+  "metadata": {"date": "2026-04-21", "data_source": "Mock Mutual Fund Data", "currency": "INR"},
+  "mutual_funds": {
+    "MF001": {
+      "scheme_code": "MF001", "scheme_name": "HDFC Flexi Cap Fund - Direct Growth",
+      "amc": "HDFC Asset Management Company", "category": "FLEXI_CAP",
+      "risk_rating": "VERY_HIGH", "current_nav": 212.45, "previous_nav": 214.16,
+      "nav_change_percent": -0.80, "aum_cr": 45680, "expense_ratio": 0.85,
+      "benchmark": "NIFTY 500 TRI",
+      "returns": {"1_day": -0.80, "1_week": -1.25, "1_month": -2.45, "3_month": 3.85, "6_month": 8.25, "1_year": 15.45, "3_year_cagr": 12.85, "5_year_cagr": 14.25},
+      "top_holdings": [
+        {"symbol": "HDFCBANK", "weight": 8.5, "sector": "BANKING"},
+        {"symbol": "ICICIBANK", "weight": 7.2, "sector": "BANKING"},
+        {"symbol": "RELIANCE", "weight": 6.8, "sector": "ENERGY"},
+        {"symbol": "INFY", "weight": 5.5, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "TCS", "weight": 5.2, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "LT", "weight": 4.2, "sector": "INFRASTRUCTURE"},
+        {"symbol": "SBIN", "weight": 3.8, "sector": "BANKING"},
+        {"symbol": "AXISBANK", "weight": 3.5, "sector": "BANKING"},
+        {"symbol": "KOTAKBANK", "weight": 3.2, "sector": "BANKING"}
+      ],
+      "sector_allocation": {"BANKING": 26.2, "INFORMATION_TECHNOLOGY": 18.5, "ENERGY": 12.8, "FINANCIAL_SERVICES": 10.2, "AUTOMOBILE": 8.5, "FMCG": 7.2, "INFRASTRUCTURE": 6.5, "OTHERS": 10.1}
+    },
+    "MF002": {
+      "scheme_code": "MF002", "scheme_name": "SBI Blue Chip Fund - Direct Growth",
+      "amc": "SBI Mutual Fund", "category": "LARGE_CAP",
+      "risk_rating": "HIGH", "current_nav": 168.25, "previous_nav": 169.60,
+      "nav_change_percent": -0.80, "aum_cr": 38520, "expense_ratio": 0.72,
+      "benchmark": "NIFTY 100 TRI",
+      "returns": {"1_day": -0.80, "1_week": -1.15, "1_month": -2.25, "3_month": 4.15, "6_month": 9.45, "1_year": 16.85, "3_year_cagr": 13.45, "5_year_cagr": 15.25},
+      "top_holdings": [
+        {"symbol": "RELIANCE", "weight": 9.8, "sector": "ENERGY"},
+        {"symbol": "HDFCBANK", "weight": 8.2, "sector": "BANKING"},
+        {"symbol": "INFY", "weight": 7.5, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "TCS", "weight": 6.8, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "ICICIBANK", "weight": 6.2, "sector": "BANKING"},
+        {"symbol": "HINDUNILVR", "weight": 4.5, "sector": "FMCG"},
+        {"symbol": "ITC", "weight": 3.8, "sector": "FMCG"},
+        {"symbol": "SBIN", "weight": 3.5, "sector": "BANKING"},
+        {"symbol": "LT", "weight": 3.2, "sector": "INFRASTRUCTURE"}
+      ],
+      "sector_allocation": {"BANKING": 22.5, "INFORMATION_TECHNOLOGY": 20.2, "ENERGY": 14.5, "FMCG": 12.8, "FINANCIAL_SERVICES": 8.5, "TELECOM": 6.2, "INFRASTRUCTURE": 5.8, "OTHERS": 9.5}
+    },
+    "MF003": {
+      "scheme_code": "MF003", "scheme_name": "Axis Small Cap Fund - Direct Growth",
+      "amc": "Axis Asset Management", "category": "SMALL_CAP",
+      "risk_rating": "VERY_HIGH", "current_nav": 91.30, "previous_nav": 92.69,
+      "nav_change_percent": -1.50, "aum_cr": 15680, "expense_ratio": 1.12,
+      "benchmark": "NIFTY SMALLCAP 250 TRI",
+      "returns": {"1_day": -1.50, "1_week": -2.85, "1_month": -4.25, "3_month": 2.15, "6_month": 6.85, "1_year": 22.45, "3_year_cagr": 18.25, "5_year_cagr": 20.85},
+      "top_holdings": [],
+      "sector_allocation": {"INDUSTRIALS": 22.5, "CONSUMER_DISCRETIONARY": 18.2, "CHEMICALS": 14.5, "HEALTHCARE": 12.8, "FINANCIAL_SERVICES": 10.2, "INFORMATION_TECHNOLOGY": 8.5, "OTHERS": 13.3}
+    },
+    "MF004": {
+      "scheme_code": "MF004", "scheme_name": "ICICI Prudential Technology Fund - Direct Growth",
+      "amc": "ICICI Prudential AMC", "category": "SECTORAL_IT",
+      "risk_rating": "VERY_HIGH", "current_nav": 141.16, "previous_nav": 139.46,
+      "nav_change_percent": 1.22, "aum_cr": 12450, "expense_ratio": 0.98,
+      "benchmark": "NIFTY IT TRI",
+      "returns": {"1_day": 1.22, "1_week": 2.85, "1_month": 5.45, "3_month": 8.25, "6_month": 12.85, "1_year": 18.45, "3_year_cagr": 10.25, "5_year_cagr": 16.85},
+      "top_holdings": [
+        {"symbol": "INFY", "weight": 22.5, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "TCS", "weight": 18.8, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "HCLTECH", "weight": 12.5, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "WIPRO", "weight": 10.2, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "TECHM", "weight": 8.5, "sector": "INFORMATION_TECHNOLOGY"}
+      ],
+      "sector_allocation": {"INFORMATION_TECHNOLOGY": 95.5, "CASH": 4.5}
+    },
+    "MF005": {
+      "scheme_code": "MF005", "scheme_name": "Nippon India Banking & Financial Services Fund - Direct Growth",
+      "amc": "Nippon India AMC", "category": "SECTORAL_BANKING",
+      "risk_rating": "VERY_HIGH", "current_nav": 38.72, "previous_nav": 39.61,
+      "nav_change_percent": -2.25, "aum_cr": 5680, "expense_ratio": 1.05,
+      "benchmark": "NIFTY BANK TRI",
+      "returns": {"1_day": -2.25, "1_week": -4.15, "1_month": -5.85, "3_month": 1.25, "6_month": 5.45, "1_year": 12.85, "3_year_cagr": 8.45, "5_year_cagr": 10.25},
+      "top_holdings": [
+        {"symbol": "HDFCBANK", "weight": 24.5, "sector": "BANKING"},
+        {"symbol": "ICICIBANK", "weight": 18.2, "sector": "BANKING"},
+        {"symbol": "SBIN", "weight": 12.5, "sector": "BANKING"},
+        {"symbol": "KOTAKBANK", "weight": 10.8, "sector": "BANKING"},
+        {"symbol": "AXISBANK", "weight": 8.5, "sector": "BANKING"},
+        {"symbol": "BAJFINANCE", "weight": 6.2, "sector": "FINANCIAL_SERVICES"},
+        {"symbol": "INDUSINDBK", "weight": 4.5, "sector": "BANKING"},
+        {"symbol": "HDFCLIFE", "weight": 3.8, "sector": "FINANCIAL_SERVICES"},
+        {"symbol": "SBILIFE", "weight": 3.2, "sector": "FINANCIAL_SERVICES"}
+      ],
+      "sector_allocation": {"BANKING": 82.5, "FINANCIAL_SERVICES": 14.2, "CASH": 3.3}
+    },
+    "MF006": {
+      "scheme_code": "MF006", "scheme_name": "UTI Nifty 50 Index Fund - Direct Growth",
+      "amc": "UTI AMC", "category": "INDEX",
+      "risk_rating": "HIGH", "current_nav": 260.00, "previous_nav": 262.63,
+      "nav_change_percent": -1.00, "aum_cr": 18520, "expense_ratio": 0.18,
+      "benchmark": "NIFTY 50 TRI",
+      "returns": {"1_day": -1.00, "1_week": -2.34, "1_month": -3.85, "3_month": 3.25, "6_month": 7.85, "1_year": 14.25, "3_year_cagr": 11.85, "5_year_cagr": 13.45},
+      "top_holdings": [
+        {"symbol": "RELIANCE", "weight": 10.2, "sector": "ENERGY"},
+        {"symbol": "HDFCBANK", "weight": 8.5, "sector": "BANKING"},
+        {"symbol": "ICICIBANK", "weight": 6.8, "sector": "BANKING"},
+        {"symbol": "INFY", "weight": 6.2, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "TCS", "weight": 5.8, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "ITC", "weight": 4.2, "sector": "FMCG"},
+        {"symbol": "LT", "weight": 3.5, "sector": "INFRASTRUCTURE"},
+        {"symbol": "SBIN", "weight": 3.2, "sector": "BANKING"},
+        {"symbol": "HINDUNILVR", "weight": 2.8, "sector": "FMCG"}
+      ],
+      "sector_allocation": {"BANKING": 22.5, "INFORMATION_TECHNOLOGY": 15.8, "ENERGY": 14.2, "FMCG": 10.5, "FINANCIAL_SERVICES": 8.2, "AUTOMOBILE": 6.5, "TELECOM": 5.8, "INFRASTRUCTURE": 5.2, "OTHERS": 11.3}
+    },
+    "MF007": {
+      "scheme_code": "MF007", "scheme_name": "HDFC Balanced Advantage Fund - Direct Growth",
+      "amc": "HDFC Asset Management Company", "category": "BALANCED_ADVANTAGE",
+      "risk_rating": "MODERATE_HIGH", "current_nav": 148.50, "previous_nav": 149.10,
+      "nav_change_percent": -0.40, "aum_cr": 68450, "expense_ratio": 0.75,
+      "benchmark": "NIFTY 50 Hybrid Composite Debt 65:35 Index",
+      "returns": {"1_day": -0.40, "1_week": -0.85, "1_month": -1.25, "3_month": 2.85, "6_month": 6.45, "1_year": 12.85, "3_year_cagr": 10.45, "5_year_cagr": 11.85},
+      "top_holdings": [
+        {"symbol": "HDFCBANK", "weight": 5.2, "sector": "BANKING"},
+        {"symbol": "ICICIBANK", "weight": 4.5, "sector": "BANKING"},
+        {"symbol": "RELIANCE", "weight": 4.2, "sector": "ENERGY"},
+        {"symbol": "INFY", "weight": 3.8, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "TCS", "weight": 3.5, "sector": "INFORMATION_TECHNOLOGY"}
+      ],
+      "sector_allocation": {"BANKING": 12.5, "INFORMATION_TECHNOLOGY": 10.2, "ENERGY": 8.5, "FMCG": 6.8, "FINANCIAL_SERVICES": 5.2, "INFRASTRUCTURE": 4.1, "DEBT": 37.8, "CASH_AND_EQUIV": 14.9}
+    },
+    "MF008": {
+      "scheme_code": "MF008", "scheme_name": "ICICI Prudential Corporate Bond Fund - Direct Growth",
+      "amc": "ICICI Prudential AMC", "category": "CORPORATE_BOND",
+      "risk_rating": "MODERATE", "current_nav": 30.25, "previous_nav": 30.23,
+      "nav_change_percent": 0.05, "aum_cr": 22580, "expense_ratio": 0.35,
+      "benchmark": "CRISIL Corporate Bond Composite Index",
+      "returns": {"1_day": 0.05, "1_week": 0.12, "1_month": 0.55, "3_month": 1.65, "6_month": 3.25, "1_year": 7.85, "3_year_cagr": 6.45, "5_year_cagr": 7.25},
+      "top_holdings": [],
+      "sector_allocation": {"AAA_CORPORATE_BONDS": 92.0, "AA_CORPORATE_BONDS": 8.0}
+    },
+    "MF009": {
+      "scheme_code": "MF009", "scheme_name": "SBI Magnum Gilt Fund - Direct Growth",
+      "amc": "SBI Mutual Fund", "category": "GILT",
+      "risk_rating": "MODERATE", "current_nav": 54.80, "previous_nav": 54.83,
+      "nav_change_percent": -0.05, "aum_cr": 8520, "expense_ratio": 0.45,
+      "benchmark": "CRISIL Dynamic Gilt Index",
+      "returns": {"1_day": -0.05, "1_week": -0.15, "1_month": 0.35, "3_month": 1.25, "6_month": 2.85, "1_year": 6.85, "3_year_cagr": 5.85, "5_year_cagr": 6.45},
+      "top_holdings": [],
+      "sector_allocation": {"GOVERNMENT_SECURITIES": 100.0}
+    },
+    "MF010": {
+      "scheme_code": "MF010", "scheme_name": "Parag Parikh Flexi Cap Fund - Direct Growth",
+      "amc": "PPFAS Asset Management", "category": "FLEXI_CAP",
+      "risk_rating": "VERY_HIGH", "current_nav": 69.25, "previous_nav": 69.60,
+      "nav_change_percent": -0.50, "aum_cr": 52480, "expense_ratio": 0.68,
+      "benchmark": "NIFTY 500 TRI",
+      "returns": {"1_day": -0.50, "1_week": -0.95, "1_month": -1.85, "3_month": 4.25, "6_month": 9.85, "1_year": 18.45, "3_year_cagr": 15.25, "5_year_cagr": 17.85},
+      "top_holdings": [
+        {"symbol": "HDFCBANK", "weight": 6.5, "sector": "BANKING"},
+        {"symbol": "ITC", "weight": 4.5, "sector": "FMCG"},
+        {"symbol": "ICICIBANK", "weight": 3.5, "sector": "BANKING"},
+        {"symbol": "POWERGRID", "weight": 2.8, "sector": "ENERGY"}
+      ],
+      "sector_allocation": {"INFORMATION_TECHNOLOGY": 22.5, "BANKING": 18.2, "FMCG": 12.5, "FINANCIAL_SERVICES": 10.8, "CONSUMER_DISCRETIONARY": 8.5, "ENERGY": 6.2, "OTHERS": 19.6, "CASH": 1.7}
+    },
+    "MF011": {
+      "scheme_code": "MF011", "scheme_name": "Kotak Equity Arbitrage Fund - Direct Growth",
+      "amc": "Kotak AMC", "category": "ARBITRAGE",
+      "risk_rating": "LOW", "current_nav": 33.15, "previous_nav": 33.14,
+      "nav_change_percent": 0.02, "aum_cr": 42580, "expense_ratio": 0.42,
+      "benchmark": "NIFTY 50 Arbitrage Index",
+      "returns": {"1_day": 0.02, "1_week": 0.08, "1_month": 0.45, "3_month": 1.35, "6_month": 2.85, "1_year": 6.25, "3_year_cagr": 5.45, "5_year_cagr": 5.85},
+      "top_holdings": [],
+      "sector_allocation": {"ARBITRAGE_POSITIONS": 85.5, "DEBT": 12.2, "CASH": 2.3}
+    },
+    "MF012": {
+      "scheme_code": "MF012", "scheme_name": "UTI Nifty 50 Index Fund - Direct Growth",
+      "amc": "UTI AMC", "category": "INDEX",
+      "risk_rating": "HIGH", "current_nav": 260.00, "previous_nav": 262.63,
+      "nav_change_percent": -1.00, "aum_cr": 18520, "expense_ratio": 0.18,
+      "benchmark": "NIFTY 50 TRI",
+      "returns": {"1_day": -1.00, "1_week": -2.34, "1_month": -3.85, "3_month": 3.25, "6_month": 7.85, "1_year": 14.25, "3_year_cagr": 11.85, "5_year_cagr": 13.45},
+      "top_holdings": [
+        {"symbol": "RELIANCE", "weight": 10.2, "sector": "ENERGY"},
+        {"symbol": "HDFCBANK", "weight": 8.5, "sector": "BANKING"},
+        {"symbol": "ICICIBANK", "weight": 6.8, "sector": "BANKING"},
+        {"symbol": "INFY", "weight": 6.2, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "TCS", "weight": 5.8, "sector": "INFORMATION_TECHNOLOGY"},
+        {"symbol": "LT", "weight": 3.5, "sector": "INFRASTRUCTURE"},
+        {"symbol": "SBIN", "weight": 3.2, "sector": "BANKING"},
+        {"symbol": "HINDUNILVR", "weight": 2.8, "sector": "FMCG"}
+      ],
+      "sector_allocation": {"BANKING": 22.5, "INFORMATION_TECHNOLOGY": 15.8, "ENERGY": 14.2, "FMCG": 10.5, "FINANCIAL_SERVICES": 8.2, "AUTOMOBILE": 6.5, "TELECOM": 5.8, "INFRASTRUCTURE": 5.2, "OTHERS": 11.3}
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "metadata": {"date": "2026-04-21", "data_source": "Mock Portfolio Data", "currency": "INR"},
+  "portfolios": {
+    "PORTFOLIO_001": {
+      "user_id": "USR001", "user_name": "Rahul Sharma", "portfolio_type": "DIVERSIFIED",
+      "risk_profile": "MODERATE", "investment_horizon": "LONG_TERM",
+      "description": "Well-diversified portfolio across sectors with balanced equity-MF allocation",
+      "total_investment": 2500000, "current_value": 2875420,
+      "holdings": {
+        "stocks": [
+          {"symbol": "HDFCBANK", "name": "HDFC Bank Ltd", "sector": "BANKING", "quantity": 100, "avg_buy_price": 1520.00, "current_price": 1542.30, "weight_in_portfolio": 5.36},
+          {"symbol": "TCS", "name": "Tata Consultancy Services", "sector": "INFORMATION_TECHNOLOGY", "quantity": 50, "avg_buy_price": 3850.00, "current_price": 4125.80, "weight_in_portfolio": 7.17},
+          {"symbol": "INFY", "name": "Infosys Ltd", "sector": "INFORMATION_TECHNOLOGY", "quantity": 100, "avg_buy_price": 1580.00, "current_price": 1678.25, "weight_in_portfolio": 5.84},
+          {"symbol": "RELIANCE", "name": "Reliance Industries Ltd", "sector": "ENERGY", "quantity": 60, "avg_buy_price": 2750.00, "current_price": 2856.40, "weight_in_portfolio": 5.96},
+          {"symbol": "SUNPHARMA", "name": "Sun Pharmaceutical", "sector": "PHARMACEUTICALS", "quantity": 80, "avg_buy_price": 1150.00, "current_price": 1245.80, "weight_in_portfolio": 3.47},
+          {"symbol": "HINDUNILVR", "name": "Hindustan Unilever", "sector": "FMCG", "quantity": 40, "avg_buy_price": 2380.00, "current_price": 2456.75, "weight_in_portfolio": 3.42},
+          {"symbol": "LT", "name": "Larsen & Toubro", "sector": "INFRASTRUCTURE", "quantity": 30, "avg_buy_price": 3200.00, "current_price": 3425.60, "weight_in_portfolio": 3.57},
+          {"symbol": "TATAMOTORS", "name": "Tata Motors Ltd", "sector": "AUTOMOBILE", "quantity": 100, "avg_buy_price": 820.00, "current_price": 945.60, "weight_in_portfolio": 3.29}
+        ],
+        "mutual_funds": [
+          {"scheme_code": "MF001", "scheme_name": "HDFC Flexi Cap Fund - Direct Growth", "category": "FLEXI_CAP", "units": 5000, "avg_nav": 185.50, "current_nav": 212.45, "weight_in_portfolio": 36.94},
+          {"scheme_code": "MF002", "scheme_name": "SBI Blue Chip Fund - Direct Growth", "category": "LARGE_CAP", "units": 3500, "avg_nav": 145.00, "current_nav": 168.25, "weight_in_portfolio": 20.48},
+          {"scheme_code": "MF003", "scheme_name": "Axis Small Cap Fund - Direct Growth", "category": "SMALL_CAP", "units": 800, "avg_nav": 78.50, "current_nav": 91.30, "weight_in_portfolio": 2.54},
+          {"scheme_code": "MF004", "scheme_name": "ICICI Prudential Technology Fund - Direct Growth", "category": "SECTORAL_IT", "units": 400, "avg_nav": 132.00, "current_nav": 141.16, "weight_in_portfolio": 1.96}
+        ]
+      }
+    },
+    "PORTFOLIO_002": {
+      "user_id": "USR002", "user_name": "Priya Patel", "portfolio_type": "SECTOR_CONCENTRATED",
+      "risk_profile": "AGGRESSIVE", "investment_horizon": "MEDIUM_TERM",
+      "description": "Banking and Financial Services heavy portfolio with high sector concentration",
+      "total_investment": 1800000, "current_value": 2045680,
+      "holdings": {
+        "stocks": [
+          {"symbol": "HDFCBANK", "name": "HDFC Bank Ltd", "sector": "BANKING", "quantity": 300, "avg_buy_price": 1480.00, "current_price": 1542.30, "weight_in_portfolio": 22.62},
+          {"symbol": "ICICIBANK", "name": "ICICI Bank Ltd", "sector": "BANKING", "quantity": 250, "avg_buy_price": 1050.00, "current_price": 1128.75, "weight_in_portfolio": 13.80},
+          {"symbol": "SBIN", "name": "State Bank of India", "sector": "BANKING", "quantity": 400, "avg_buy_price": 680.00, "current_price": 752.40, "weight_in_portfolio": 14.71},
+          {"symbol": "KOTAKBANK", "name": "Kotak Mahindra Bank", "sector": "BANKING", "quantity": 80, "avg_buy_price": 1750.00, "current_price": 1845.60, "weight_in_portfolio": 7.22},
+          {"symbol": "AXISBANK", "name": "Axis Bank Ltd", "sector": "BANKING", "quantity": 150, "avg_buy_price": 1020.00, "current_price": 1085.30, "weight_in_portfolio": 7.96},
+          {"symbol": "BAJFINANCE", "name": "Bajaj Finance Ltd", "sector": "FINANCIAL_SERVICES", "quantity": 40, "avg_buy_price": 6500.00, "current_price": 6845.30, "weight_in_portfolio": 13.38},
+          {"symbol": "HDFCLIFE", "name": "HDFC Life Insurance", "sector": "FINANCIAL_SERVICES", "quantity": 200, "avg_buy_price": 585.00, "current_price": 625.40, "weight_in_portfolio": 6.11},
+          {"symbol": "INDUSINDBK", "name": "IndusInd Bank", "sector": "BANKING", "quantity": 80, "avg_buy_price": 1380.00, "current_price": 1425.60, "weight_in_portfolio": 5.57}
+        ],
+        "mutual_funds": [
+          {"scheme_code": "MF005", "scheme_name": "Nippon India Banking & Financial Services Fund - Direct Growth", "category": "SECTORAL_BANKING", "units": 1200, "avg_nav": 32.50, "current_nav": 38.72, "weight_in_portfolio": 2.27},
+          {"scheme_code": "MF006", "scheme_name": "UTI Nifty 50 Index Fund - Direct Growth", "category": "INDEX", "units": 500, "avg_nav": 258.00, "current_nav": 260.00, "weight_in_portfolio": 6.35}
+        ]
+      }
+    },
+    "PORTFOLIO_003": {
+      "user_id": "USR003", "user_name": "Arun Krishnamurthy", "portfolio_type": "CONSERVATIVE",
+      "risk_profile": "CONSERVATIVE", "investment_horizon": "LONG_TERM",
+      "description": "Conservative mutual fund heavy portfolio with defensive stock picks",
+      "total_investment": 3500000, "current_value": 4125680,
+      "holdings": {
+        "stocks": [
+          {"symbol": "ITC", "name": "ITC Ltd", "sector": "FMCG", "quantity": 500, "avg_buy_price": 385.00, "current_price": 428.65, "weight_in_portfolio": 5.19},
+          {"symbol": "HINDUNILVR", "name": "Hindustan Unilever", "sector": "FMCG", "quantity": 60, "avg_buy_price": 2280.00, "current_price": 2456.75, "weight_in_portfolio": 3.57},
+          {"symbol": "NESTLEIND", "name": "Nestle India Ltd", "sector": "FMCG", "quantity": 30, "avg_buy_price": 2250.00, "current_price": 2425.60, "weight_in_portfolio": 1.76},
+          {"symbol": "POWERGRID", "name": "Power Grid Corp", "sector": "ENERGY", "quantity": 400, "avg_buy_price": 265.00, "current_price": 298.45, "weight_in_portfolio": 2.89},
+          {"symbol": "NTPC", "name": "NTPC Ltd", "sector": "ENERGY", "quantity": 300, "avg_buy_price": 345.00, "current_price": 385.60, "weight_in_portfolio": 2.80},
+          {"symbol": "TCS", "name": "Tata Consultancy Services", "sector": "INFORMATION_TECHNOLOGY", "quantity": 25, "avg_buy_price": 3720.00, "current_price": 4125.80, "weight_in_portfolio": 2.50},
+          {"symbol": "ASIANPAINT", "name": "Asian Paints Ltd", "sector": "FMCG", "quantity": 35, "avg_buy_price": 2650.00, "current_price": 2845.60, "weight_in_portfolio": 2.41}
+        ],
+        "mutual_funds": [
+          {"scheme_code": "MF007", "scheme_name": "HDFC Balanced Advantage Fund - Direct Growth", "category": "BALANCED_ADVANTAGE", "units": 8000, "avg_nav": 125.00, "current_nav": 148.50, "weight_in_portfolio": 28.79},
+          {"scheme_code": "MF008", "scheme_name": "ICICI Prudential Corporate Bond Fund - Direct Growth", "category": "CORPORATE_BOND", "units": 25000, "avg_nav": 28.50, "current_nav": 30.25, "weight_in_portfolio": 18.33},
+          {"scheme_code": "MF009", "scheme_name": "SBI Magnum Gilt Fund - Direct Growth", "category": "GILT", "units": 12000, "avg_nav": 52.00, "current_nav": 54.80, "weight_in_portfolio": 15.94},
+          {"scheme_code": "MF010", "scheme_name": "Parag Parikh Flexi Cap Fund - Direct Growth", "category": "FLEXI_CAP", "units": 6000, "avg_nav": 58.50, "current_nav": 69.25, "weight_in_portfolio": 10.07},
+          {"scheme_code": "MF011", "scheme_name": "Kotak Equity Arbitrage Fund - Direct Growth", "category": "ARBITRAGE", "units": 8000, "avg_nav": 32.00, "current_nav": 33.15, "weight_in_portfolio": 6.43},
+          {"scheme_code": "MF012", "scheme_name": "UTI Nifty 50 Index Fund - Direct Growth", "category": "INDEX", "units": 300, "avg_nav": 245.00, "current_nav": 260.00, "weight_in_portfolio": 1.89}
+        ]
+      }
+    }
+  }
+}
