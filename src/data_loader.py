@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import logging
+import os
 import threading
 from pathlib import Path
 from typing import ClassVar, Optional
@@ -21,6 +23,9 @@ from src.models.types import (
     StockData,
     StockHistory,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class DataLoader:
@@ -56,6 +61,8 @@ class DataLoader:
                 if cls._instance is None:
                     inst = DataLoader(data_dir)
                     inst._load_all()
+                    if os.environ.get("USE_LIVE_DATA", "false").lower() == "true":
+                        inst.refresh_from_live()
                     cls._instance = inst
         return cls._instance
 
@@ -66,6 +73,91 @@ class DataLoader:
         self._load_portfolios()
         self._load_mutual_funds()
         self._load_sector_mapping()
+
+    def refresh_from_live(self) -> None:
+        """Refresh market data and news from live sources (yfinance + newsapi).
+        Falls back silently to existing static data on any failure."""
+        try:
+            from src.data_sources.market_fetcher import (
+                fetch_indices,
+                fetch_index_histories,
+                fetch_sector_performance,
+                fetch_stock_histories,
+                fetch_stocks,
+            )
+            symbols = list(self._stocks.keys())
+            sector_stocks_map = {s: self.get_sector_stocks(s) for s in self.get_all_sectors()}
+
+            with self._lock:
+                live_stocks = fetch_stocks(symbols)
+                if live_stocks:
+                    self._stocks.update(live_stocks)
+                    logger.info("Refreshed %d stocks from yfinance", len(live_stocks))
+
+                live_histories = fetch_stock_histories(list(live_stocks.keys()))
+                if live_histories:
+                    self._stock_history.update(live_histories)
+
+                live_indices = fetch_indices()
+                if live_indices:
+                    self._indices.update(live_indices)
+                    logger.info("Refreshed %d indices from yfinance", len(live_indices))
+
+                live_index_histories = fetch_index_histories()
+                if live_index_histories:
+                    self._index_history.update(live_index_histories)
+
+                live_sector_perf = fetch_sector_performance(sector_stocks_map)
+                if live_sector_perf:
+                    self._sector_performance.update(live_sector_perf)
+
+        except Exception as exc:
+            logger.warning("Live market data refresh failed, using static data: %s", exc)
+
+        try:
+            from src.data_sources.news_fetcher import fetch_newsapi_headlines, fetch_yahoo_news
+            from src.data_sources.sentiment_classifier import classify, infer_entities, infer_scope
+
+            symbols = list(self._stocks.keys())
+            raw_articles = fetch_yahoo_news(symbols[:20]) + fetch_newsapi_headlines()
+
+            if raw_articles:
+                new_articles: list = []
+                for i, raw in enumerate(raw_articles[:25]):
+                    try:
+                        entities = infer_entities(raw.headline, symbols)
+                        sentiment_label, sentiment_score = classify(f"{raw.headline}. {raw.summary}")
+                        scope = infer_scope(raw.headline, entities)
+                        article = NewsArticle(
+                            id=f"LIVE{i + 1:03d}",
+                            headline=raw.headline,
+                            summary=raw.summary or raw.headline,
+                            published_at=raw.published_at,
+                            source=raw.source,
+                            sentiment=sentiment_label,
+                            sentiment_score=sentiment_score,
+                            scope=scope,
+                            impact_level="MEDIUM",
+                            entities=entities,
+                            causal_factors=[],
+                        )
+                        new_articles.append(article)
+                    except Exception:
+                        continue
+
+                with self._lock:
+                    self._news = new_articles
+                    self._news_by_id = {a.id: a for a in new_articles}
+                logger.info("Refreshed %d news articles from live sources", len(new_articles))
+
+                try:
+                    from src.rag.news_ingester import ingest_articles
+                    ingest_articles(new_articles)
+                except Exception as exc:
+                    logger.debug("RAG ingest of live news failed: %s", exc)
+
+        except Exception as exc:
+            logger.warning("Live news refresh failed, using static data: %s", exc)
 
     def _read_json(self, filename: str) -> dict:
         path = self._data_dir / filename

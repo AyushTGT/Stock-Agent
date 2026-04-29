@@ -35,7 +35,7 @@ _STARTER_QUESTIONS = [
 
 @st.cache_resource(show_spinner="Loading financial data...")
 def get_agent(portfolio_id: str):
-    from src.agent.financial_advisor import FinancialAdvisorAgent  # noqa: PLC0415
+    from src.agent.financial_advisor import FinancialAdvisorAgent
     return FinancialAdvisorAgent(portfolio_id=portfolio_id, data_dir=DATA_DIR)
 
 
@@ -55,6 +55,17 @@ def _render_eval_scores(eval_score) -> None:
         st.markdown(
             f"**Overall: :{overall_color}[{eval_score.overall:.1f}/10]** — {eval_score.justification}"
         )
+
+
+def _render_turn_metrics(turn_metrics) -> None:
+    latency_s = turn_metrics.total_latency_ms / 1000
+    total_tokens = turn_metrics.prompt_tokens + turn_metrics.completion_tokens
+    st.caption(
+        f"⏱ {latency_s:.1f}s  ·  "
+        f"🔤 {total_tokens:,} tokens  ·  "
+        f"💰 ${turn_metrics.estimated_cost_usd:.4f}  ·  "
+        f"🔧 {turn_metrics.tool_calls_count} tool calls"
+    )
 
 
 with st.sidebar:
@@ -79,6 +90,7 @@ with st.sidebar:
     if st.button("Clear Chat", use_container_width=True):
         st.session_state["messages"] = []
         st.session_state["eval_scores"] = []
+        st.session_state["turn_metrics"] = []
         st.rerun()
 
     st.caption("Langfuse observability: " + ("Enabled" if os.environ.get("LANGFUSE_SECRET_KEY") else "Disabled (no key)"))
@@ -88,12 +100,15 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = []
 if "eval_scores" not in st.session_state:
     st.session_state["eval_scores"] = []
+if "turn_metrics" not in st.session_state:
+    st.session_state["turn_metrics"] = []
 if "last_portfolio" not in st.session_state:
     st.session_state["last_portfolio"] = selected_pid
 
 if st.session_state["last_portfolio"] != selected_pid:
     st.session_state["messages"] = []
     st.session_state["eval_scores"] = []
+    st.session_state["turn_metrics"] = []
     st.session_state["last_portfolio"] = selected_pid
 
 st.title("Autonomous Financial Advisor")
@@ -106,6 +121,8 @@ for i, msg in enumerate(st.session_state["messages"]):
             score_idx = i // 2
             if score_idx < len(st.session_state["eval_scores"]):
                 _render_eval_scores(st.session_state["eval_scores"][score_idx])
+            if score_idx < len(st.session_state["turn_metrics"]):
+                _render_turn_metrics(st.session_state["turn_metrics"][score_idx])
 
 if "pending_question" in st.session_state:
     prompt = st.session_state.pop("pending_question")
@@ -120,10 +137,12 @@ if prompt:
     with st.chat_message("assistant"):
         with st.spinner("Analysing your portfolio..."):
             agent = get_agent(selected_pid)
-            response_text, eval_score = agent.chat(prompt)
+            response_text, eval_score, turn_metrics = agent.chat(prompt)
 
         st.markdown(response_text)
         _render_eval_scores(eval_score)
+        _render_turn_metrics(turn_metrics)
 
     st.session_state["messages"].append({"role": "assistant", "content": response_text})
     st.session_state["eval_scores"].append(eval_score)
+    st.session_state["turn_metrics"].append(turn_metrics)

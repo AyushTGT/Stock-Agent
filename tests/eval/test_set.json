@@ -1,0 +1,244 @@
+{
+  "questions": [
+    {
+      "id": "Q001",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "Why is my portfolio down today? Give me the full causal breakdown.",
+      "ground_truth": "The portfolio experienced mixed performance today. IT holdings like Infosys and TCS contributed positively due to USD strength and strong quarterly guidance, while Banking holdings faced pressure from RBI hawkish signals. The net portfolio P&L reflects the offset between these sector movements, with causal chains traceable through specific news events.",
+      "must_contain": ["portfolio", "sector", "basis points", "%"],
+      "must_not_contain": ["I don't know", "cannot determine", "no data available"]
+    },
+    {
+      "id": "Q002",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "Why is my portfolio down today? Give me the full causal breakdown.",
+      "ground_truth": "Priya's banking-heavy portfolio declined significantly. With 91.58% exposure to Banking and Financial Services, the RBI's hawkish policy stance caused sector-wide selling. HDFC Bank (22.6% weight) fell 3.51%, contributing -79.3bp. ICICI Bank (13.8% weight) fell 3.13%, contributing -43.2bp. SBI (14.7% weight) fell 3.02%, contributing -44.4bp. Total portfolio impact exceeded -230bp (-2.33%).",
+      "must_contain": ["RBI", "Banking", "bp", "HDFC", "ICICI"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q003",
+      "portfolio_id": "PORTFOLIO_003",
+      "question": "Why did my portfolio barely move today despite a broad market selloff?",
+      "ground_truth": "Arun's conservative portfolio held up due to 34% debt mutual fund allocation which acts as a buffer during equity selloffs. FMCG holdings like HUL and Nestle showed defensive characteristics. The low beta profile of the portfolio means it has inherently low sensitivity to market swings.",
+      "must_contain": ["debt", "FMCG", "defensive", "beta"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q004",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "Which news events had the biggest impact on my holdings today?",
+      "ground_truth": "The highest-impact news events for Rahul's portfolio include RBI's hawkish policy stance affecting banking holdings, Infosys quarterly guidance affecting IT holdings, and any commodity or macro news affecting the broader market. Each should be quantified in basis points.",
+      "must_contain": ["news", "impact", "bp", "portfolio"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q005",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "Which news events had the biggest impact on my holdings today?",
+      "ground_truth": "For Priya's banking-heavy portfolio, the RBI hawkish stance news would have the single largest impact given her 91.58% concentration in Banking and Financial Services. Any banking sector-specific news about NPA levels, credit growth, or regulatory changes would also feature prominently.",
+      "must_contain": ["RBI", "news", "Banking", "impact"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q006",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "Are there any conflicting signals I should know about?",
+      "ground_truth": "Conflicting signals include stocks showing price movements inconsistent with their sector or news sentiment. For example, a stock with positive earnings news but a declining price suggests sector headwinds are dominating the stock-specific catalyst. Each conflict should be explained with the resolution.",
+      "must_contain": ["conflict", "signal", "sector", "resolution"],
+      "must_not_contain": ["I don't know", "no conflicts"]
+    },
+    {
+      "id": "Q007",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "Are there any conflicting signals I should know about?",
+      "ground_truth": "With Bajaj Finance showing strong asset quality guidance (positive news) while the stock falls due to RBI rate pressure on the sector, this represents a clear POSITIVE_NEWS_STOCK_FALLING conflict. The resolution is that macro/sector headwinds from RBI dominated the stock-specific positive catalyst.",
+      "must_contain": ["conflict", "Bajaj", "RBI", "resolution"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q008",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "What is my sector exposure and where am I most concentrated?",
+      "ground_truth": "Rahul's diversified portfolio has exposure across multiple sectors. The allocation includes direct stocks across IT, Banking, FMCG, and other sectors, plus indirect exposure through mutual funds. The breakdown should show percentage by sector and flag any concentration above 25%.",
+      "must_contain": ["sector", "allocation", "%", "exposure"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q009",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "What is my sector exposure and where am I most concentrated?",
+      "ground_truth": "Priya's portfolio has a CRITICAL concentration: approximately 91.58% in Banking and Financial Services combined. This far exceeds the 60% threshold that triggers a CRITICAL concentration flag. The portfolio is essentially a single-sector bet on banking.",
+      "must_contain": ["CRITICAL", "Banking", "91", "concentration"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q010",
+      "portfolio_id": "PORTFOLIO_003",
+      "question": "What is my sector exposure and where am I most concentrated?",
+      "ground_truth": "Arun's conservative portfolio has 34% in debt mutual funds, with equity exposure spread across FMCG, IT, and Pharma. The defensive composition means low sector concentration risk with the debt allocation providing stability.",
+      "must_contain": ["debt", "34%", "sector", "FMCG"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q011",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "What's the overall market trend and how does it affect me?",
+      "ground_truth": "The current market trend should be described in terms of NIFTY50 and SENSEX direction, FII/DII flows, and market breadth (advance/decline ratio). The advisor should then map how the overall trend specifically impacts Rahul's holdings given his sector composition.",
+      "must_contain": ["NIFTY", "FII", "trend", "breadth"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q012",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "What should I do to reduce my concentration risk?",
+      "ground_truth": "To reduce the CRITICAL banking concentration, Priya should trim her largest banking holdings and reallocate to underrepresented sectors. Specific recommendations should name target stocks/funds and approximate weight targets. For example: trim HDFC Bank from ~22% to ≤15%, reallocate to IT or FMCG for defensive balance.",
+      "must_contain": ["reduce", "Banking", "reallocate", "concentration"],
+      "must_not_contain": ["I don't know", "diversify broadly"]
+    },
+    {
+      "id": "Q013",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "What's my portfolio beta and what does it mean for my risk?",
+      "ground_truth": "Portfolio beta measures sensitivity to market movements. A beta > 1 means the portfolio amplifies market moves. The advisor should calculate weighted portfolio beta from individual stock betas, compare to the 1.3 threshold for HIGH beta flag, and explain what it means in practical terms for the investor.",
+      "must_contain": ["beta", "risk", "market", "weight"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q014",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "How are IT stocks performing today and what's driving it?",
+      "ground_truth": "IT sector performance today is driven by USD/INR dynamics (rupee weakness benefits IT exporters), quarterly earnings guidance from large-caps like Infosys and TCS, and global tech demand signals. The advisor should provide specific change percentages and link them to the news drivers.",
+      "must_contain": ["IT", "USD", "sector", "Infosys"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q015",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "How is the Banking sector performing today and what's driving it?",
+      "ground_truth": "The Banking sector is under pressure from RBI's hawkish signals. Key drivers include repo rate expectations, NIM compression concerns, credit growth outlook, and FII selling in rate-sensitive sectors. HDFC Bank, ICICI Bank, and SBI are showing notable declines.",
+      "must_contain": ["Banking", "RBI", "HDFC", "sector", "change"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q016",
+      "portfolio_id": "PORTFOLIO_003",
+      "question": "Are my mutual funds performing well? Which ones are dragging performance?",
+      "ground_truth": "Arun's mutual funds should be evaluated by their NAV change today and their sector exposure via drill-through. Debt funds should show minimal volatility. The analysis should identify which equity funds are underperforming relative to their benchmark.",
+      "must_contain": ["mutual fund", "NAV", "debt", "performance"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q017",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "What news is affecting the FMCG sector today?",
+      "ground_truth": "FMCG sector news typically relates to volume growth figures, raw material costs, rural demand indicators, and company-specific earnings. HUL's weak volume growth is a known negative signal while defensive buying during risk-off environments provides support.",
+      "must_contain": ["FMCG", "HUL", "news", "sector"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q018",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "Is Bajaj Finance a buy or should I hold given the current signals?",
+      "ground_truth": "Bajaj Finance presents a conflict: strong asset quality guidance (positive) but sector headwinds from RBI (negative). The advisor should present the bull and bear case, note the conflict, explain which signal dominates currently, and give a definitive recommendation on whether to hold, add, or reduce.",
+      "must_contain": ["Bajaj", "RBI", "conflict", "recommendation"],
+      "must_not_contain": ["I don't know", "consult a financial advisor"]
+    },
+    {
+      "id": "Q019",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "What's my overall return since I invested and how does today compare?",
+      "ground_truth": "The overall gain/loss compares current value to total invested amount. Today's P&L is a subset. The advisor should present both the absolute and percentage figures, identify which holdings contributed most to the overall return versus today's movement.",
+      "must_contain": ["overall", "gain", "invested", "today", "%"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q020",
+      "portfolio_id": "PORTFOLIO_003",
+      "question": "How does today's market trend affect a conservative investor like me?",
+      "ground_truth": "For Arun's conservative portfolio, a bearish market trend has limited impact due to 34% debt allocation. The defensive nature of FMCG and Pharma holdings means lower beta to market moves. The advisor should quantify how the portfolio's beta and defensive composition shield it compared to the broader index decline.",
+      "must_contain": ["conservative", "debt", "defensive", "beta", "market"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q021",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "Do I have any mutual fund overlap risk? Which stocks appear in multiple funds?",
+      "ground_truth": "MF overlap risk occurs when the same stock appears as a top holding in 3 or more funds in the portfolio. The advisor should check each fund's top holdings, identify overlapping stocks, and flag if the MF_OVERLAP risk threshold is breached.",
+      "must_contain": ["mutual fund", "overlap", "holdings", "risk"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q022",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "What would happen to my portfolio if RBI raises rates by 25bps next meeting?",
+      "ground_truth": "A 25bp RBI rate hike would further pressure banking stocks through NIM compression and credit slowdown. Given 91.58% Banking + Financial Services exposure, the impact would be disproportionate. The advisor should project the likely sector move based on the current RBI news sensitivity and translate it to estimated portfolio impact.",
+      "must_contain": ["RBI", "rate", "Banking", "impact", "portfolio"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q023",
+      "portfolio_id": "PORTFOLIO_003",
+      "question": "Which of my holdings is acting as the best hedge today?",
+      "ground_truth": "In a down market, Arun's debt funds and FMCG holdings act as the primary hedges. The advisor should identify which specific holdings have positive or near-zero P&L while the broader market is down, and explain why (low beta, defensive sector, inverse correlation).",
+      "must_contain": ["hedge", "defensive", "debt", "portfolio"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q024",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "What is the confidence level of today's analysis and why?",
+      "ground_truth": "The confidence score reflects news corroboration strength, breadth alignment, data coverage, and conflict penalty. A HIGH score (>0.70) means multiple independent news sources point in the same direction with good portfolio coverage. MEDIUM (0.40-0.70) means some uncertainty. The advisor should explain which component is the binding constraint.",
+      "must_contain": ["confidence", "score", "HIGH|MEDIUM|LOW", "component"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q025",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "What is the advance-decline ratio today and what does it signal?",
+      "ground_truth": "The advance-decline ratio from NIFTY50 breadth data shows whether gains/losses are broad-based or narrow. An A/D ratio below 1.0 signals more decliners than advancers (bearish breadth). The advisor should map this to whether the portfolio's performance is in line with the broad market or showing divergence.",
+      "must_contain": ["advance", "decline", "breadth", "ratio"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q026",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "How much of my portfolio loss today is attributable to FII selling?",
+      "ground_truth": "FII selling in rate-sensitive sectors like Banking amplifies the selling pressure beyond the fundamental news. The advisor should report FII net flows, identify that Banking is a primary FII target during hawkish RBI episodes, and estimate the FII contribution to today's portfolio decline.",
+      "must_contain": ["FII", "Banking", "selling", "portfolio"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q027",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "Tell me about Tata Motors today — is it moving with the auto sector or against it?",
+      "ground_truth": "The advisor should compare Tata Motors' day change percent against the Auto sector's change percent. If Tata Motors is outperforming by >1.5%, it indicates a stock-specific catalyst. If it's underperforming the sector, there may be a company-specific negative. The analysis should name the relevant news.",
+      "must_contain": ["Tata Motors", "Auto", "sector", "divergence|outperform|underperform"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q028",
+      "portfolio_id": "PORTFOLIO_003",
+      "question": "How has my portfolio performed over the past week compared to NIFTY50?",
+      "ground_truth": "The weekly comparison should use the 7-day cumulative change from historical data. Arun's conservative portfolio should show lower volatility than NIFTY50. The advisor should present both the portfolio return and NIFTY50 7-day return and explain the outperformance/underperformance.",
+      "must_contain": ["week", "NIFTY", "portfolio", "return", "%"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q029",
+      "portfolio_id": "PORTFOLIO_001",
+      "question": "What is Infosys doing today and what's the news behind it?",
+      "ground_truth": "Infosys performance should be reported with current price, day change %, volume vs average, and the specific news driving it (quarterly guidance, deal wins, USD strength impact). The advisor should also note the portfolio weight and basis point contribution.",
+      "must_contain": ["Infosys", "price", "%", "news"],
+      "must_not_contain": ["I don't know", "cannot determine"]
+    },
+    {
+      "id": "Q030",
+      "portfolio_id": "PORTFOLIO_002",
+      "question": "If I want to add to my portfolio, which sector offers the best risk-reward right now?",
+      "ground_truth": "Given Priya's extreme Banking concentration, adding to any non-Banking sector improves diversification. The advisor should evaluate IT (USD strength tailwind), FMCG (defensive), and Pharma (regulatory clarity) using current sector sentiment, weekly trends, and confidence in the news signals. A specific sector + instrument recommendation is required.",
+      "must_contain": ["sector", "IT|FMCG|Pharma", "recommendation", "diversif"],
+      "must_not_contain": ["I don't know", "consult a financial advisor", "cannot determine"]
+    }
+  ]
+}

@@ -279,6 +279,14 @@ class ToolDispatcher:
         self._conflict = ConflictResolver(self._loader)
         self._ranker = SignalRanker(self._loader)
 
+        try:
+            from src.rag.news_ingester import ingest_from_loader
+            from src.rag.vector_store import VectorStore
+            ingest_from_loader(self._loader)
+            self._vector_store = VectorStore.get_instance()
+        except Exception:
+            self._vector_store = None
+
     def dispatch(self, tool_name: str, tool_input: dict[str, Any]) -> dict:
         try:
             return self._route(tool_name, tool_input)
@@ -323,14 +331,17 @@ class ToolDispatcher:
             return {"conflicts": [r.model_dump() for r in reports]}
 
         if name == "get_news_for_query":
-            articles = self._news.get_news_for_query(
-                sectors=inp.get("sectors") or [],
-                stocks=inp.get("stocks") or [],
-                indices=inp.get("indices") or [],
-                scope_filter=inp.get("scope_filter"),
-                impact_filter=inp.get("impact_filter"),
-                max_results=inp.get("max_results", 10),
-            )
+            max_results = inp.get("max_results", 10)
+            articles = self._rag_news_query(inp, max_results)
+            if not articles:
+                articles = self._news.get_news_for_query(
+                    sectors=inp.get("sectors") or [],
+                    stocks=inp.get("stocks") or [],
+                    indices=inp.get("indices") or [],
+                    scope_filter=inp.get("scope_filter"),
+                    impact_filter=inp.get("impact_filter"),
+                    max_results=max_results,
+                )
             return {"articles": [a.model_dump() for a in articles]}
 
         if name == "compute_confidence_score":
@@ -359,3 +370,22 @@ class ToolDispatcher:
             return score.model_dump()
 
         return {"error": f"Unknown tool '{name}'", "available": [t["function"]["name"] for t in TOOL_DEFINITIONS]}
+
+    def _rag_news_query(self, inp: dict, max_results: int) -> list:
+        if self._vector_store is None or not self._vector_store.available:
+            return []
+        parts = (inp.get("sectors") or []) + (inp.get("stocks") or []) + (inp.get("indices") or [])
+        if not parts:
+            return []
+        query_text = " ".join(parts)
+        try:
+            articles = self._vector_store.query(query_text, n_results=max_results)
+            scope_filter = inp.get("scope_filter")
+            impact_filter = inp.get("impact_filter")
+            if scope_filter:
+                articles = [a for a in articles if a.scope == scope_filter]
+            if impact_filter:
+                articles = [a for a in articles if a.impact_level == impact_filter]
+            return articles
+        except Exception:
+            return []

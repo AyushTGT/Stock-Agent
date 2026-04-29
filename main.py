@@ -94,12 +94,18 @@ def run_chat(portfolio_id: str, single_query: str | None = None) -> None:
             continue
 
         with console.status("[bold yellow]Thinking...[/bold yellow]", spinner="dots"):
-            response_text, eval_score = agent.chat(user_input)
+            response_text, eval_score, metrics = agent.chat(user_input)
 
         console.print("\n[bold green]Advisor:[/bold green]")
         console.print(Markdown(response_text))
         console.print()
         print_eval_scores(eval_score)
+        console.print(
+            f"[dim]{metrics.total_latency_ms / 1000:.1f}s  ·  "
+            f"{metrics.prompt_tokens + metrics.completion_tokens:,} tokens  ·  "
+            f"${metrics.estimated_cost_usd:.4f}  ·  "
+            f"{metrics.tool_calls_count} tool calls[/dim]"
+        )
         console.print()
 
         if queries is not None and not queries:

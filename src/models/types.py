@@ -341,3 +341,19 @@ class EvaluationScore(BaseModel):
     actionability: float = Field(ge=0, le=10)
     overall: float = Field(ge=0, le=10)
     justification: str
+
+
+class GuardResult(BaseModel):
+    allowed: bool
+    category: str
+    reason: str
+
+
+class TurnMetrics(BaseModel):
+    total_latency_ms: float
+    tool_loop_latency_ms: float
+    eval_latency_ms: float
+    prompt_tokens: int
+    completion_tokens: int
+    estimated_cost_usd: float
+    tool_calls_count: int
