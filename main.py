@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -21,6 +22,23 @@ _PORTFOLIO_CHOICES = {
     "2": ("PORTFOLIO_002", "Priya Patel — Banking-heavy CRITICAL concentration"),
     "3": ("PORTFOLIO_003", "Arun Krishnamurthy — Conservative (34% debt MFs)"),
 }
+
+
+def pick_api_key(cli_key: str | None) -> str:
+    key = cli_key or os.environ.get("GROQ_API_KEY", "")
+    if key:
+        return key
+    console.print(Panel(
+        "[yellow]No GROQ_API_KEY found in environment.[/yellow]\n"
+        "Your key will be used only for this session and will [bold]not[/bold] be saved.",
+        title="API Key Required",
+        expand=False,
+    ))
+    key = Prompt.ask("Enter your Groq API key", password=True)
+    if not key.strip():
+        console.print("[red]API key is required. Exiting.[/red]")
+        sys.exit(1)
+    return key.strip()
 
 
 def pick_portfolio(cli_id: str | None) -> str:
@@ -64,11 +82,11 @@ def print_eval_scores(eval_score) -> None:
     )
 
 
-def run_chat(portfolio_id: str, single_query: str | None = None) -> None:
+def run_chat(portfolio_id: str, api_key: str, single_query: str | None = None) -> None:
     from src.agent.financial_advisor import FinancialAdvisorAgent
 
     console.print(f"\n[bold green]Loading agent for {portfolio_id}...[/bold green]")
-    agent = FinancialAdvisorAgent(portfolio_id=portfolio_id, data_dir=DATA_DIR)
+    agent = FinancialAdvisorAgent(portfolio_id=portfolio_id, data_dir=DATA_DIR, api_key=api_key)
     console.print("[green]Ready. Type your question (or 'exit' to quit).[/green]\n")
 
     queries = [single_query] if single_query else None
@@ -110,10 +128,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Autonomous Financial Advisor CLI")
     parser.add_argument("--portfolio", "-p", help="Portfolio ID (PORTFOLIO_001 / 002 / 003)")
     parser.add_argument("--query", "-q", help="Single query — runs once and exits")
+    parser.add_argument("--api-key", "-k", help="Groq API key (session only, not saved)")
     args = parser.parse_args()
 
+    api_key = pick_api_key(args.api_key)
     portfolio_id = pick_portfolio(args.portfolio)
-    run_chat(portfolio_id, single_query=args.query)
+    run_chat(portfolio_id, api_key=api_key, single_query=args.query)
 
 
 if __name__ == "__main__":

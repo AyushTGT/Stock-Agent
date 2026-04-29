@@ -21,10 +21,13 @@ _HISTORY_WINDOW = 20
 
 class FinancialAdvisorAgent:
 
-    def __init__(self, portfolio_id: str, data_dir: Path) -> None:
+    def __init__(self, portfolio_id: str, data_dir: Path, api_key: str | None = None) -> None:
         self.portfolio_id = portfolio_id
+        resolved_key = api_key or os.environ.get("GROQ_API_KEY", "")
+        if not resolved_key:
+            raise ValueError("Groq API key is required. Pass api_key= or set GROQ_API_KEY in your environment.")
         self._client = openai.OpenAI(
-            api_key=os.environ["GROQ_API_KEY"],
+            api_key=resolved_key,
             base_url=_BASE_URL,
         )
         self._dispatcher = ToolDispatcher(data_dir)

@@ -34,9 +34,9 @@ _STARTER_QUESTIONS = [
 
 
 @st.cache_resource(show_spinner="Loading financial data...")
-def get_agent(portfolio_id: str):
+def get_agent(portfolio_id: str, api_key: str):
     from src.agent.financial_advisor import FinancialAdvisorAgent  # noqa: PLC0415
-    return FinancialAdvisorAgent(portfolio_id=portfolio_id, data_dir=DATA_DIR)
+    return FinancialAdvisorAgent(portfolio_id=portfolio_id, data_dir=DATA_DIR, api_key=api_key)
 
 
 def _render_eval_scores(eval_score) -> None:
@@ -59,7 +59,18 @@ def _render_eval_scores(eval_score) -> None:
 
 with st.sidebar:
     st.title("📈 Financial Advisor")
-    st.caption("Powered by LLaMA 3.3 70B via Groq")
+    # st.caption("Powered by LLaMA 3.3 70B via Groq")
+    st.divider()
+
+    entered_key = st.text_input(
+        "Groq API Key",
+        type="password",
+        placeholder="gsk_...",
+        help="Your key is used only for this session and is never saved.",
+    )
+    _groq_api_key = entered_key.strip() or os.environ.get("GROQ_API_KEY", "")
+    if not _groq_api_key:
+        st.warning("Enter a Groq API key to start.")
     st.divider()
 
     selected_pid = st.selectbox(
@@ -81,7 +92,7 @@ with st.sidebar:
         st.session_state["eval_scores"] = []
         st.rerun()
 
-    st.caption("Langfuse observability: " + ("Enabled" if os.environ.get("LANGFUSE_SECRET_KEY") else "Disabled (no key)"))
+    # st.caption("Langfuse observability: " + ("Enabled" if os.environ.get("LANGFUSE_SECRET_KEY") else "Disabled (no key)"))
 
 
 if "messages" not in st.session_state:
@@ -113,13 +124,17 @@ else:
     prompt = st.chat_input("Ask about your portfolio...")
 
 if prompt:
+    if not _groq_api_key:
+        st.error("Please enter your Groq API key in the sidebar to continue.")
+        st.stop()
+
     st.session_state["messages"].append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
         with st.spinner("Analysing your portfolio..."):
-            agent = get_agent(selected_pid)
+            agent = get_agent(selected_pid, _groq_api_key)
             response_text, eval_score = agent.chat(prompt)
 
         st.markdown(response_text)
