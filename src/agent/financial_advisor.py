@@ -13,23 +13,46 @@ from src.data_loader import DataLoader
 from src.models.types import EvaluationScore
 from src.observability.tracer import LangfuseTracer
 
-_MODEL = "llama-3.3-70b-versatile"
-_BASE_URL = "https://api.groq.com/openai/v1"
+_GROQ_MODEL = "llama-3.3-70b-versatile"
+_GEMINI_MODEL_DEFAULT = "gemini-2.0-flash-lite"
+_GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+_GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 _MAX_TOOL_ITERATIONS = 8
 _HISTORY_WINDOW = 20
 
 
 class FinancialAdvisorAgent:
 
-    def __init__(self, portfolio_id: str, data_dir: Path, api_key: str | None = None) -> None:
+    def __init__(
+        self,
+        portfolio_id: str,
+        data_dir: Path,
+        api_key: str | None = None,
+        provider: str = "groq",
+        model: str | None = None,
+    ) -> None:
         self.portfolio_id = portfolio_id
-        resolved_key = api_key or os.environ.get("GROQ_API_KEY", "")
-        if not resolved_key:
-            raise ValueError("Groq API key is required. Pass api_key= or set GROQ_API_KEY in your environment.")
-        self._client = openai.OpenAI(
-            api_key=resolved_key,
-            base_url=_BASE_URL,
-        )
+        self.provider = provider.lower()
+
+        if self.provider == "gemini":
+            resolved_key = api_key or os.environ.get("GEMINI_API_KEY", "")
+            if not resolved_key:
+                raise ValueError("Gemini API key is required. Pass api_key= or set GEMINI_API_KEY in your environment.")
+            self._model = model or _GEMINI_MODEL_DEFAULT
+            self._client = openai.OpenAI(
+                api_key=resolved_key,
+                base_url=_GEMINI_BASE_URL,
+            )
+        else:
+            resolved_key = api_key or os.environ.get("GROQ_API_KEY", "")
+            if not resolved_key:
+                raise ValueError("Groq API key is required. Pass api_key= or set GROQ_API_KEY in your environment.")
+            self._model = model or _GROQ_MODEL
+            self._client = openai.OpenAI(
+                api_key=resolved_key,
+                base_url=_GROQ_BASE_URL,
+            )
+
         self._dispatcher = ToolDispatcher(data_dir)
         self._tracer = LangfuseTracer()
         DataLoader.get_instance(data_dir)
@@ -66,19 +89,22 @@ class FinancialAdvisorAgent:
         for iteration in range(_MAX_TOOL_ITERATIONS):
             span = self._tracer.start_generation(
                 trace=trace,
-                name=f"groq-call-{iteration + 1}",
-                model=_MODEL,
+                name=f"llm-call-{iteration + 1}",
+                model=self._model,
                 input_messages=messages,
             )
 
-            response = self._client.chat.completions.create(
-                model=_MODEL,
-                messages=messages,
-                tools=TOOL_DEFINITIONS,
-                tool_choice="auto",
-                max_tokens=2048,
-                parallel_tool_calls=False,
-            )
+            call_kwargs: dict = {
+                "model": self._model,
+                "messages": messages,
+                "tools": TOOL_DEFINITIONS,
+                "tool_choice": "auto",
+                "max_tokens": 2048,
+            }
+            if self.provider == "groq":
+                call_kwargs["parallel_tool_calls"] = False
+
+            response = self._client.chat.completions.create(**call_kwargs)
 
             self._tracer.end_generation(span=span, output=response, usage=response.usage)
 
@@ -105,7 +131,6 @@ class FinancialAdvisorAgent:
                     "content": self._clip_tool_result(result),
                 })
 
-        # Reached max iterations without a final text response
         return assistant_msg.content or ""  # type: ignore[possibly-undefined]
 
     def _run_self_evaluation(
@@ -119,13 +144,13 @@ class FinancialAdvisorAgent:
         span = self._tracer.start_generation(
             trace=trace,
             name="self-evaluation",
-            model=_MODEL,
+            model=self._model,
             input_messages=[{"role": "user", "content": prompt}],
         )
 
         try:
             eval_response = self._client.chat.completions.create(
-                model=_MODEL,
+                model=self._model,
                 max_tokens=512,
                 messages=[{"role": "user", "content": prompt}],
             )

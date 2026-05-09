@@ -24,17 +24,19 @@ _PORTFOLIO_CHOICES = {
 }
 
 
-def pick_api_key(cli_key: str | None) -> str:
-    key = cli_key or os.environ.get("GROQ_API_KEY", "")
+def pick_api_key(cli_key: str | None, provider: str) -> str:
+    env_var = "GEMINI_API_KEY" if provider == "gemini" else "GROQ_API_KEY"
+    key = cli_key or os.environ.get(env_var, "")
     if key:
         return key
     console.print(Panel(
-        "[yellow]No GROQ_API_KEY found in environment.[/yellow]\n"
+        f"[yellow]No {env_var} found in environment.[/yellow]\n"
         "Your key will be used only for this session and will [bold]not[/bold] be saved.",
         title="API Key Required",
         expand=False,
     ))
-    key = Prompt.ask("Enter your Groq API key", password=True)
+    label = "Enter your Gemini API key" if provider == "gemini" else "Enter your Groq API key"
+    key = Prompt.ask(label, password=True)
     if not key.strip():
         console.print("[red]API key is required. Exiting.[/red]")
         sys.exit(1)
@@ -49,7 +51,7 @@ def pick_portfolio(cli_id: str | None) -> str:
         console.print(f"[red]Unknown portfolio ID '{cli_id}'. Valid: {', '.join(sorted(valid_ids))}[/red]")
         sys.exit(1)
 
-    console.print(Panel("[bold cyan]Autonomous Financial Advisor[/bold cyan]\nPowered by LLaMA 3.3 70B via Groq", expand=False))
+    console.print(Panel("[bold cyan]Autonomous Financial Advisor[/bold cyan]\nPowered by LLaMA 3.3 70B (Groq) or Gemini 2.0 Flash", expand=False))
     table = Table(show_header=True, header_style="bold magenta")
     table.add_column("#", width=3)
     table.add_column("Portfolio ID", width=16)
@@ -82,11 +84,12 @@ def print_eval_scores(eval_score) -> None:
     )
 
 
-def run_chat(portfolio_id: str, api_key: str, single_query: str | None = None) -> None:
+def run_chat(portfolio_id: str, api_key: str, provider: str, model: str | None, single_query: str | None = None) -> None:
     from src.agent.financial_advisor import FinancialAdvisorAgent
 
-    console.print(f"\n[bold green]Loading agent for {portfolio_id}...[/bold green]")
-    agent = FinancialAdvisorAgent(portfolio_id=portfolio_id, data_dir=DATA_DIR, api_key=api_key)
+    model_label = model or ("gemini-2.0-flash-lite" if provider == "gemini" else "llama-3.3-70b-versatile")
+    console.print(f"\n[bold green]Loading agent for {portfolio_id} ({provider} / {model_label})...[/bold green]")
+    agent = FinancialAdvisorAgent(portfolio_id=portfolio_id, data_dir=DATA_DIR, api_key=api_key, provider=provider, model=model)
     console.print("[green]Ready. Type your question (or 'exit' to quit).[/green]\n")
 
     queries = [single_query] if single_query else None
@@ -128,12 +131,23 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Autonomous Financial Advisor CLI")
     parser.add_argument("--portfolio", "-p", help="Portfolio ID (PORTFOLIO_001 / 002 / 003)")
     parser.add_argument("--query", "-q", help="Single query — runs once and exits")
-    parser.add_argument("--api-key", "-k", help="Groq API key (session only, not saved)")
+    parser.add_argument("--api-key", "-k", help="API key (session only, not saved)")
+    parser.add_argument(
+        "--provider",
+        choices=["groq", "gemini"],
+        default=os.environ.get("LLM_PROVIDER", "groq"),
+        help="LLM provider: groq (default) or gemini",
+    )
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="Model override (e.g. gemini-1.5-flash-8b). Defaults to provider's default.",
+    )
     args = parser.parse_args()
 
-    api_key = pick_api_key(args.api_key)
+    api_key = pick_api_key(args.api_key, args.provider)
     portfolio_id = pick_portfolio(args.portfolio)
-    run_chat(portfolio_id, api_key=api_key, single_query=args.query)
+    run_chat(portfolio_id, api_key=api_key, provider=args.provider, model=args.model, single_query=args.query)
 
 
 if __name__ == "__main__":
