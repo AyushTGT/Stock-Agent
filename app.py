@@ -32,11 +32,18 @@ _STARTER_QUESTIONS = [
     "What are the key risks in my portfolio right now?",
 ]
 
+_GEMINI_MODELS = {
+    "gemini-2.0-flash-lite": "gemini-2.0-flash-lite — best free tier (30 RPM, 1500 RPD)",
+    "gemini-1.5-flash-8b": "gemini-1.5-flash-8b — generous free tier",
+    "gemini-1.5-flash-002": "gemini-1.5-flash-002 — stable versioned release",
+    "gemini-2.0-flash": "gemini-2.0-flash — most capable (strict free limits)",
+}
+
 
 @st.cache_resource(show_spinner="Loading financial data...")
-def get_agent(portfolio_id: str):
-    from src.agent.financial_advisor import FinancialAdvisorAgent
-    return FinancialAdvisorAgent(portfolio_id=portfolio_id, data_dir=DATA_DIR)
+def get_agent(portfolio_id: str, api_key: str, provider: str, model: str):
+    from src.agent.financial_advisor import FinancialAdvisorAgent  # noqa: PLC0415
+    return FinancialAdvisorAgent(portfolio_id=portfolio_id, data_dir=DATA_DIR, api_key=api_key, provider=provider, model=model)
 
 
 def _render_eval_scores(eval_score) -> None:
@@ -68,9 +75,80 @@ def _render_turn_metrics(turn_metrics) -> None:
     )
 
 
+if "custom_groq_key" not in st.session_state:
+    st.session_state["custom_groq_key"] = ""
+if "custom_gemini_key" not in st.session_state:
+    st.session_state["custom_gemini_key"] = ""
+
 with st.sidebar:
     st.title("📈 Financial Advisor")
-    st.caption("Powered by LLaMA 3.3 70B via Groq")
+    st.divider()
+
+    with st.expander("LLM Provider & API Key", expanded=False):
+        _provider = st.radio(
+            "Provider",
+            options=["groq", "gemini"],
+            format_func=lambda x: "Groq (LLaMA 3.3 70B)" if x == "groq" else "Gemini",
+            horizontal=True,
+        )
+
+        if _provider == "gemini":
+            _model = st.selectbox(
+                "Gemini Model",
+                options=list(_GEMINI_MODELS.keys()),
+                format_func=lambda m: _GEMINI_MODELS[m],
+                index=0,
+            )
+        else:
+            _model = "llama-3.3-70b-versatile"
+
+        _env_key = os.environ.get("GROQ_API_KEY" if _provider == "groq" else "GEMINI_API_KEY", "")
+        _saved_custom = (
+            st.session_state["custom_groq_key"]
+            if _provider == "groq"
+            else st.session_state["custom_gemini_key"]
+        )
+        _api_key = _saved_custom or _env_key
+
+        if _saved_custom:
+            st.success("Your key is active")
+        elif _env_key:
+            st.success("Default key loaded")
+        else:
+            st.warning("No API key — add one below")
+
+        _provider_label = "Groq" if _provider == "groq" else "Gemini"
+        _placeholder = "gsk_..." if _provider == "groq" else "AIza..."
+        _key_url = "console.groq.com → API Keys" if _provider == "groq" else "aistudio.google.com → Get API Key"
+
+        st.markdown(
+            f"**For better rate limits, use your own free key:**\n"
+            f"* Go to **{_key_url}**\n"
+            f"* Click **Create API Key**\n"
+            f"* Paste it below and click **Apply**\n"
+            f"* Your key is session-only and never saved"
+        )
+        with st.form(f"{_provider}_key_form", clear_on_submit=False):
+            _input_key = st.text_input(
+                f"{_provider_label} API Key",
+                type="password",
+                placeholder=_placeholder,
+            )
+            _col1, _col2 = st.columns(2)
+            _apply = _col1.form_submit_button("Apply", use_container_width=True)
+            _clear = _col2.form_submit_button("Clear", use_container_width=True)
+
+        if _apply and _input_key.strip():
+            if _provider == "groq":
+                st.session_state["custom_groq_key"] = _input_key.strip()
+            else:
+                st.session_state["custom_gemini_key"] = _input_key.strip()
+            st.rerun()
+        if _clear:
+            st.session_state["custom_groq_key"] = ""
+            st.session_state["custom_gemini_key"] = ""
+            st.rerun()
+
     st.divider()
 
     selected_pid = st.selectbox(
@@ -130,13 +208,17 @@ else:
     prompt = st.chat_input("Ask about your portfolio...")
 
 if prompt:
+    if not _api_key:
+        st.error("Please add an API key in the 'LLM Provider & API Key' section above.")
+        st.stop()
+
     st.session_state["messages"].append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
         with st.spinner("Analysing your portfolio..."):
-            agent = get_agent(selected_pid)
+            agent = get_agent(selected_pid, _api_key, _provider, _model)
             response_text, eval_score, turn_metrics = agent.chat(prompt)
 
         st.markdown(response_text)

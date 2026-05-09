@@ -21,12 +21,16 @@ from src.guardrails.guardrails import (
 from src.models.types import EvaluationScore, TurnMetrics
 from src.observability.tracer import LangfuseTracer
 
-_MODEL = "llama-3.3-70b-versatile"
-_BASE_URL = "https://api.groq.com/openai/v1"
+_GROQ_MODEL = "llama-3.3-70b-versatile"
+_GEMINI_MODEL_DEFAULT = "gemini-2.0-flash-lite"
+_GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+_GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 _MAX_TOOL_ITERATIONS = 8
 _HISTORY_WINDOW = 20
 _GROQ_COST_INPUT_PER_M = 0.59
 _GROQ_COST_OUTPUT_PER_M = 0.79
+_GEMINI_COST_INPUT_PER_M = 0.075
+_GEMINI_COST_OUTPUT_PER_M = 0.30
 
 
 class FinancialAdvisorAgent:
@@ -35,14 +39,38 @@ class FinancialAdvisorAgent:
         self,
         portfolio_id: str,
         data_dir: Path,
+        api_key: str | None = None,
+        provider: str = "groq",
+        model: str | None = None,
         prompt_version: PromptVersion = "v2",
         capture_contexts: bool = False,
     ) -> None:
         self.portfolio_id = portfolio_id
-        self._client = openai.OpenAI(
-            api_key=os.environ["GROQ_API_KEY"],
-            base_url=_BASE_URL,
-        )
+        self.provider = provider.lower()
+
+        if self.provider == "gemini":
+            resolved_key = api_key or os.environ.get("GEMINI_API_KEY", "")
+            if not resolved_key:
+                raise ValueError("Gemini API key is required. Pass api_key= or set GEMINI_API_KEY in your environment.")
+            self._model = model or _GEMINI_MODEL_DEFAULT
+            self._cost_input = _GEMINI_COST_INPUT_PER_M
+            self._cost_output = _GEMINI_COST_OUTPUT_PER_M
+            self._client = openai.OpenAI(
+                api_key=resolved_key,
+                base_url=_GEMINI_BASE_URL,
+            )
+        else:
+            resolved_key = api_key or os.environ.get("GROQ_API_KEY", "")
+            if not resolved_key:
+                raise ValueError("Groq API key is required. Pass api_key= or set GROQ_API_KEY in your environment.")
+            self._model = model or _GROQ_MODEL
+            self._cost_input = _GROQ_COST_INPUT_PER_M
+            self._cost_output = _GROQ_COST_OUTPUT_PER_M
+            self._client = openai.OpenAI(
+                api_key=resolved_key,
+                base_url=_GROQ_BASE_URL,
+            )
+
         self._dispatcher = ToolDispatcher(data_dir)
         self._tracer = LangfuseTracer()
         self._input_guard = InputGuard()
@@ -100,9 +128,9 @@ class FinancialAdvisorAgent:
         total_completion_tokens += eval_tokens[1]
 
         total_ms = (time.perf_counter() - turn_start) * 1000
-        cost = (total_prompt_tokens / 1_000_000) * _GROQ_COST_INPUT_PER_M + (
+        cost = (total_prompt_tokens / 1_000_000) * self._cost_input + (
             total_completion_tokens / 1_000_000
-        ) * _GROQ_COST_OUTPUT_PER_M
+        ) * self._cost_output
 
         metrics = TurnMetrics(
             total_latency_ms=round(total_ms, 1),
@@ -135,19 +163,22 @@ class FinancialAdvisorAgent:
         for iteration in range(_MAX_TOOL_ITERATIONS):
             span = self._tracer.start_generation(
                 trace=trace,
-                name=f"groq-call-{iteration + 1}",
-                model=_MODEL,
+                name=f"llm-call-{iteration + 1}",
+                model=self._model,
                 input_messages=messages,
             )
 
-            response = self._client.chat.completions.create(
-                model=_MODEL,
-                messages=messages,
-                tools=TOOL_DEFINITIONS,
-                tool_choice="auto",
-                max_tokens=2048,
-                parallel_tool_calls=False,
-            )
+            call_kwargs: dict = {
+                "model": self._model,
+                "messages": messages,
+                "tools": TOOL_DEFINITIONS,
+                "tool_choice": "auto",
+                "max_tokens": 2048,
+            }
+            if self.provider == "groq":
+                call_kwargs["parallel_tool_calls"] = False
+
+            response = self._client.chat.completions.create(**call_kwargs)
 
             self._tracer.end_generation(span=span, output=response, usage=response.usage)
             if response.usage:
@@ -195,13 +226,13 @@ class FinancialAdvisorAgent:
         span = self._tracer.start_generation(
             trace=trace,
             name="self-evaluation",
-            model=_MODEL,
+            model=self._model,
             input_messages=[{"role": "user", "content": prompt}],
         )
 
         try:
             eval_response = self._client.chat.completions.create(
-                model=_MODEL,
+                model=self._model,
                 max_tokens=512,
                 messages=[{"role": "user", "content": prompt}],
             )
@@ -217,7 +248,7 @@ class FinancialAdvisorAgent:
                     raw = raw[4:]
             data = json.loads(raw)
             return EvaluationScore(**data), (prompt_tokens, completion_tokens)
-        except Exception:
+        except Exception:  # noqa: BLE001
             return EvaluationScore(
                 causal_depth=5.0,
                 accuracy=5.0,
