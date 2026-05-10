@@ -62,7 +62,8 @@ class DataLoader:
                     inst = DataLoader(data_dir)
                     inst._load_all()
                     if os.environ.get("USE_LIVE_DATA", "false").lower() == "true":
-                        inst.refresh_from_live()
+                        print("[DEBUG] DataLoader: starting live data refresh in background...", flush=True)
+                        threading.Thread(target=inst.refresh_from_live, daemon=True).start()
                     cls._instance = inst
         return cls._instance
 

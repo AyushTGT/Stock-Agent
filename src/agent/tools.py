@@ -267,7 +267,9 @@ TOOL_DEFINITIONS: list[dict] = [
 
 class ToolDispatcher:
     def __init__(self, data_dir: Path) -> None:
+        print("[DEBUG] ToolDispatcher: loading DataLoader...", flush=True)
         self._loader = DataLoader.get_instance(data_dir)
+        print("[DEBUG] ToolDispatcher: DataLoader ready", flush=True)
 
         self._pnl = PnLCalculator(self._loader)
         self._alloc = AllocationAnalyzer(self._loader)
@@ -278,13 +280,18 @@ class ToolDispatcher:
         self._causal = CausalLinker(self._loader)
         self._conflict = ConflictResolver(self._loader)
         self._ranker = SignalRanker(self._loader)
+        print("[DEBUG] ToolDispatcher: all modules ready, starting RAG init...", flush=True)
 
         try:
             from src.rag.news_ingester import ingest_from_loader
             from src.rag.vector_store import VectorStore
+            print("[DEBUG] ToolDispatcher: ingesting news...", flush=True)
             ingest_from_loader(self._loader)
+            print("[DEBUG] ToolDispatcher: news ingested, loading VectorStore...", flush=True)
             self._vector_store = VectorStore.get_instance()
-        except Exception:
+            print("[DEBUG] ToolDispatcher: VectorStore ready", flush=True)
+        except Exception as e:
+            print(f"[DEBUG] ToolDispatcher: RAG failed with: {e}", flush=True)
             self._vector_store = None
 
     def dispatch(self, tool_name: str, tool_input: dict[str, Any]) -> dict:
