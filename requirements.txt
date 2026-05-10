@@ -7,8 +7,9 @@ streamlit>=1.35.0
 numpy>=1.26.0
 yfinance>=0.2.40
 newsapi-python>=0.2.7
-chromadb>=0.5.0
-sentence-transformers>=3.0.0
+# RAG deps — install locally if needed: pip install chromadb sentence-transformers
+# chromadb>=0.5.0
+# sentence-transformers>=3.0.0
 vaderSentiment>=3.3.2
 ragas>=0.2.0
 langchain>=0.3.0

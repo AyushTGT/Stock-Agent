@@ -42,6 +42,11 @@ class VectorStore:
         return cls._instance
 
     def _init_chromadb(self) -> None:
+        import os
+        if os.environ.get("DISABLE_RAG", "").lower() in ("1", "true", "yes"):
+            logger.info("RAG disabled via DISABLE_RAG env var")
+            VectorStore._available = False
+            return
         import concurrent.futures
         try:
             import chromadb
