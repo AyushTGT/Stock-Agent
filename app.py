@@ -182,6 +182,8 @@ if "turn_metrics" not in st.session_state:
     st.session_state["turn_metrics"] = []
 if "last_portfolio" not in st.session_state:
     st.session_state["last_portfolio"] = selected_pid
+if "is_processing" not in st.session_state:
+    st.session_state["is_processing"] = False
 
 if st.session_state["last_portfolio"] != selected_pid:
     st.session_state["messages"] = []
@@ -202,28 +204,51 @@ for i, msg in enumerate(st.session_state["messages"]):
             if score_idx < len(st.session_state["turn_metrics"]):
                 _render_turn_metrics(st.session_state["turn_metrics"][score_idx])
 
+# Always render chat_input so it stays visible after every response.
+# Disable it while a response is being generated to prevent double-submission.
+manual_input = st.chat_input(
+    "Ask about your portfolio...",
+    disabled=st.session_state["is_processing"],
+)
 if "pending_question" in st.session_state:
     prompt = st.session_state.pop("pending_question")
 else:
-    prompt = st.chat_input("Ask about your portfolio...")
+    prompt = manual_input
 
-if prompt:
+if prompt and not st.session_state["is_processing"]:
     if not _api_key:
         st.error("Please add an API key in the 'LLM Provider & API Key' section above.")
         st.stop()
 
+    st.session_state["is_processing"] = True
     st.session_state["messages"].append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
         with st.spinner("Analysing your portfolio..."):
+            print("[DEBUG] calling get_agent...", flush=True)
             agent = get_agent(selected_pid, _api_key, _provider, _model)
-            response_text, eval_score, turn_metrics = agent.chat(prompt)
+            print("[DEBUG] get_agent done, calling chat...", flush=True)
+            try:
+                response_text, eval_score, turn_metrics = agent.chat(prompt)
+            except Exception as exc:
+                st.session_state["is_processing"] = False
+                err = str(exc)
+                if "rate_limit_exceeded" in err or "429" in err:
+                    import re
+                    wait = re.search(r"try again in ([^\.]+)", err)
+                    wait_msg = f" Try again in **{wait.group(1)}**." if wait else ""
+                    st.error(f"⏳ Groq daily token limit reached.{wait_msg}\n\nSwitch to **Gemini** in the sidebar → LLM Provider & API Key.")
+                else:
+                    st.error(f"Request failed: {exc}")
+                st.stop()
 
         st.markdown(response_text)
         _render_eval_scores(eval_score)
         _render_turn_metrics(turn_metrics)
+
+    st.session_state["is_processing"] = False
 
     st.session_state["messages"].append({"role": "assistant", "content": response_text})
     st.session_state["eval_scores"].append(eval_score)

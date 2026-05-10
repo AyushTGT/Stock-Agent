@@ -80,12 +80,13 @@ class InputGuard:
         return GuardResult(allowed=True, category="OK", reason="")
 
     def _llm_classify(self, query: str) -> GuardResult | None:
+        print("[DEBUG] guardrail LLM classify called...", flush=True)
         groq_key = os.environ.get("GROQ_API_KEY", "")
         if not groq_key:
             return None
         try:
             import openai
-            client = openai.OpenAI(api_key=groq_key, base_url="https://api.groq.com/openai/v1")
+            client = openai.OpenAI(api_key=groq_key, base_url="https://api.groq.com/openai/v1", timeout=10.0, max_retries=0)
             prompt = (
                 "Classify this user query for an Indian stock market advisor into exactly one category:\n"
                 "FINANCE_INDIA — valid question about NSE/BSE stocks, mutual funds, sectors, portfolio, market news\n"

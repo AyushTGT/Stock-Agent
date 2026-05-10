@@ -42,6 +42,7 @@ class VectorStore:
         return cls._instance
 
     def _init_chromadb(self) -> None:
+        import concurrent.futures
         try:
             import chromadb
             from sentence_transformers import SentenceTransformer
@@ -51,7 +52,17 @@ class VectorStore:
                 name=_COLLECTION_NAME,
                 metadata={"hnsw:space": "cosine"},
             )
-            self._embedder = SentenceTransformer(_EMBED_MODEL)
+            print("[DEBUG] loading SentenceTransformer model...", flush=True)
+            ex = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+            future = ex.submit(SentenceTransformer, _EMBED_MODEL)
+            ex.shutdown(wait=False)
+            try:
+                self._embedder = future.result(timeout=15)
+            except concurrent.futures.TimeoutError:
+                logger.warning("SentenceTransformer load timed out — RAG disabled")
+                VectorStore._available = False
+                return
+            print("[DEBUG] SentenceTransformer loaded.", flush=True)
             logger.info("ChromaDB initialized with %d documents", self._collection.count())
         except ImportError:
             logger.warning("chromadb or sentence-transformers not installed — RAG disabled")

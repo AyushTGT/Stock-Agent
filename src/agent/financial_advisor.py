@@ -25,8 +25,8 @@ _GROQ_MODEL = "llama-3.3-70b-versatile"
 _GEMINI_MODEL_DEFAULT = "gemini-2.0-flash-lite"
 _GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 _GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
-_MAX_TOOL_ITERATIONS = 8
-_HISTORY_WINDOW = 20
+_MAX_TOOL_ITERATIONS = 5
+_HISTORY_WINDOW = 10
 _GROQ_COST_INPUT_PER_M = 0.59
 _GROQ_COST_OUTPUT_PER_M = 0.79
 _GEMINI_COST_INPUT_PER_M = 0.075
@@ -58,6 +58,8 @@ class FinancialAdvisorAgent:
             self._client = openai.OpenAI(
                 api_key=resolved_key,
                 base_url=_GEMINI_BASE_URL,
+                timeout=60.0,
+                max_retries=1,
             )
         else:
             resolved_key = api_key or os.environ.get("GROQ_API_KEY", "")
@@ -69,6 +71,8 @@ class FinancialAdvisorAgent:
             self._client = openai.OpenAI(
                 api_key=resolved_key,
                 base_url=_GROQ_BASE_URL,
+                timeout=60.0,
+                max_retries=1,
             )
 
         self._dispatcher = ToolDispatcher(data_dir)
@@ -87,7 +91,10 @@ class FinancialAdvisorAgent:
         total_prompt_tokens = 0
         total_completion_tokens = 0
 
+        print(f"[DEBUG] chat() called with: {user_message[:60]!r}", flush=True)
+        print("[DEBUG] running input guard...", flush=True)
         guard_result = self._input_guard.check(user_message)
+        print(f"[DEBUG] guard result: allowed={guard_result.allowed}", flush=True)
         if not guard_result.allowed:
             elapsed_ms = (time.perf_counter() - turn_start) * 1000
             metrics = TurnMetrics(
@@ -111,8 +118,10 @@ class FinancialAdvisorAgent:
         if self._capture_contexts:
             self.last_contexts = []
 
+        print("[DEBUG] starting tool loop...", flush=True)
         loop_start = time.perf_counter()
         response_text, loop_tokens, tool_calls_count = self._run_tool_loop(self._build_messages(), trace)
+        print(f"[DEBUG] tool loop done. tool_calls={tool_calls_count}", flush=True)
         loop_ms = (time.perf_counter() - loop_start) * 1000
         total_prompt_tokens += loop_tokens[0]
         total_completion_tokens += loop_tokens[1]
@@ -161,6 +170,7 @@ class FinancialAdvisorAgent:
         assistant_msg = None
 
         for iteration in range(_MAX_TOOL_ITERATIONS):
+            print(f"[DEBUG] LLM call iteration {iteration + 1}...", flush=True)
             span = self._tracer.start_generation(
                 trace=trace,
                 name=f"llm-call-{iteration + 1}",
@@ -178,7 +188,24 @@ class FinancialAdvisorAgent:
             if self.provider == "groq":
                 call_kwargs["parallel_tool_calls"] = False
 
-            response = self._client.chat.completions.create(**call_kwargs)
+            print(f"[DEBUG] calling API ({self.provider}/{self._model})...", flush=True)
+            try:
+                response = self._client.chat.completions.create(**call_kwargs)
+            except Exception as e:
+                err_str = str(e)
+                if "tool_use_failed" in err_str or "Failed to call a function" in err_str:
+                    print("[DEBUG] tool_use_failed — retrying same call once", flush=True)
+                    try:
+                        response = self._client.chat.completions.create(**call_kwargs)
+                    except Exception:
+                        # second failure: drop tools and get a plain text response
+                        print("[DEBUG] retry also failed — falling back to no-tools", flush=True)
+                        fallback_kwargs = {k: v for k, v in call_kwargs.items()
+                                           if k not in ("tools", "tool_choice", "parallel_tool_calls")}
+                        response = self._client.chat.completions.create(**fallback_kwargs)
+                else:
+                    raise
+            print("[DEBUG] API response received.", flush=True)
 
             self._tracer.end_generation(span=span, output=response, usage=response.usage)
             if response.usage:
@@ -230,9 +257,10 @@ class FinancialAdvisorAgent:
             input_messages=[{"role": "user", "content": prompt}],
         )
 
+        eval_model = "llama-3.1-8b-instant" if self.provider == "groq" else self._model
         try:
             eval_response = self._client.chat.completions.create(
-                model=self._model,
+                model=eval_model,
                 max_tokens=512,
                 messages=[{"role": "user", "content": prompt}],
             )
